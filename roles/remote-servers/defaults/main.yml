@@ -1,0 +1,6 @@
+---
+# defaults file for remote-servers
+src: "{{ playbook_dir }}/roles/rabbitmq-conf-files/files/{{ inventory_hostname }}"
+dst: /home/{{ ansible_user }}
+tanzu_user: ibrahem.karkash@brightskiesinc.com
+tanzu_password: z-%q7YqX#PL&AEK

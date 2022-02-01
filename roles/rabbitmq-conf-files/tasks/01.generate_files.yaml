@@ -1,0 +1,47 @@
+---
+# tasks file for rabbitmq
+- name: create directories for the nodes
+  ansible.builtin.file:
+    path: roles/rabbitmq-conf-files/files/{{ item }}
+    state: directory
+    mode: 0775
+- name: create configurations directories for the nodes
+  ansible.builtin.file:
+    path: roles/rabbitmq-conf-files/files/{{ item }}/rabbitmq
+    state: directory
+    mode: 0775
+- name: create config files
+  ansible.builtin.template:
+    src: templates/rabbitmq.conf.j2
+    dest: roles/rabbitmq-conf-files/files/{{ item }}/rabbitmq/rabbitmq.conf
+    mode: 0664
+- name: create hosts files
+  ansible.builtin.template:
+    src: templates/hosts.j2
+    dest: roles/rabbitmq-conf-files/files/{{ item }}/hosts
+    mode: 0664
+- name: create docker-compose files
+  ansible.builtin.template:
+    src: templates/docker-compose.yaml.j2
+    dest: roles/rabbitmq-conf-files/files/{{ item }}/docker-compose.yaml
+    mode: 0664
+- name: Copy .env file
+  ansible.builtin.copy:
+    src: files/.env
+    dest: roles/rabbitmq-conf-files/files/{{ item }}/.env
+    mode: 0664
+- name: copy requirements.txt
+  copy:
+    src: files/requirements.txt
+    dest: roles/rabbitmq-conf-files/files/{{ item }}/requirements.txt
+    mode: 0664
+- name: copy enabled_plugins
+  ansible.builtin.copy:
+    src: files/enabled_plugins
+    dest: roles/rabbitmq-conf-files/files/{{ item }}/rabbitmq/enabled_plugins
+    mode: 0644
+- name: copy rabbitmq_definitions.json
+  ansible.builtin.copy:
+    src: files/rabbitmq_definitions.json
+    dest: roles/rabbitmq-conf-files/files/{{ item }}/rabbitmq/rabbitmq_definitions.json
+    mode: 0664

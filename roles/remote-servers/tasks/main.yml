@@ -1,0 +1,65 @@
+---
+# tasks file for remote-servers
+- name: Disable SELinux
+  become: true
+  selinux:
+    state: disabled
+- name: replacing Enforcing into Disabled SElinux
+  lineinfile: 
+    path: /etc/selinux/config
+    regexp: 'SELINUX=enforcing'
+    line: 'SELINUX=disabled'
+    backrefs: yes
+- name: Install podman & venv
+  become: true
+  yum:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - podman
+    - python3
+    - python3-virtualenv.noarch
+- name: copy files to remote nodes
+  become: true
+  copy:
+    src: "{{ src }}"
+    dest: "{{ dst }}"
+    mode: "0775"
+    directory_mode: true
+- name: Set files permissions
+  become: true
+  file:
+    dest: "{{ dst }}/{{ inventory_hostname }}"
+    mode: "0775"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    recurse: true
+- name: authenticate to VMWare tanzu registery
+  containers.podman.podman_login:
+    username: "{{ tanzu_user }}"
+    password: "{{ tanzu_password }}"
+    registry: registry.pivotal.io
+- name: Pull an image
+  containers.podman.podman_image:
+    name: registry.pivotal.io/rabbitmq/vmware-tanzu-rabbitmq:1.2.0
+- name: Install specified python requirements
+  command:  pip3 install -r {{ dst }}/{{ inventory_hostname }}/requirements.txt --user
+- name: podman-compose up
+  become: false
+  command: bash -c "cd {{ dst }}/{{ inventory_hostname }} &&  ~/.local/bin/podman-compose up &"
+- name: create unit files for the containers
+  containers.podman.podman_container:
+    name: "{{ inventory_hostname }}"
+    generate_systemd:
+      path: "/home/{{ ansible_user }}/.config/systemd/user"
+      restart_policy: always
+- name: Flush handlers
+  meta: flush_handlers
+  notify: system start and persist over logouts
+- name: Restart & Enable  container service
+  ansible.builtin.systemd:
+    daemon_reload: true
+    scope: user
+    state: restarted
+    enabled: true
+    name: "container-{{ inventory_hostname }}.service"

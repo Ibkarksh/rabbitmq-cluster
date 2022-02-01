@@ -1,0 +1,5 @@
+---
+# handlers file for remote-servers
+- name: system start and persist over logouts
+  become: true
+  command: bash -c "loginctl enable-linger {{ remote_user }}"

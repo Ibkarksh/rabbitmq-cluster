@@ -1,0 +1,4 @@
+[nodes]
+nodeMQ01 ansible_host=18.117.79.107
+nodeMQ02 ansible_host=18.118.11.135
+nodeMQ03 ansible_host=13.58.130.251
