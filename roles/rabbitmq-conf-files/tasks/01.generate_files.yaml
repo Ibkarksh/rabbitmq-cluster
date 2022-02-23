@@ -45,3 +45,13 @@
     src: files/rabbitmq_definitions.json
     dest: roles/rabbitmq-conf-files/files/{{ item }}/rabbitmq/rabbitmq_definitions.json
     mode: 0664
+- name: create systemd-env files
+  ansible.builtin.template:
+    src: templates/systemd-env.j2
+    dest: roles/rabbitmq-conf-files/files/{{ item }}/systemd-env
+    mode: 0664
+- name: copy unit file
+  ansible.builtin.template:
+    src: templates/systemd-unit.j2
+    dest: roles/rabbitmq-conf-files/files/{{ item }}/rabbitmq.service
+    mode: 0664

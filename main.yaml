@@ -4,5 +4,6 @@
   roles:
    - rabbitmq-conf-files
 - hosts: all
+  become: yes
   roles: 
    - remote-servers 
