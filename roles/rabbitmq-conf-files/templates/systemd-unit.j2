@@ -15,14 +15,14 @@ ExecStart=/usr/bin/podman run \
   --publish 4369:4369 \
   --publish 15672:15672 \
   --publish 25672:25672 \
-  --publish 5672:5672 \
+  --publish 5671:5671 \
   --volume /var/{{ item }}/rabbitmq:/etc/rabbitmq \
+  --volume /var/{{ item }}/ssl:/mnt \
   --volume /var/{{ item }}/hosts:/etc/hosts \
-  --volume /var/lib/rabbitmq \
+  --volume data:/var/lib/rabbitmq \
   --env RABBITMQ_ERLANG_COOKIE=${RABBITMQ_ERLANG_COOKIE} \
   --env RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER} \
   --env RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS} \
-  --env RABBITMQ_DEFAULT_VHOST=${RABBITMQ_DEFAULT_VHOST} \
   ${IMAGE}
 ExecReload=-/usr/bin/podman stop ${NAME}
 ExecReload=-/usr/bin/podman rm ${NAME}

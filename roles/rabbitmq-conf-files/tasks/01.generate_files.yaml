@@ -10,6 +10,26 @@
     path: roles/rabbitmq-conf-files/files/{{ item }}/rabbitmq
     state: directory
     mode: 0775
+- name: create SSL directories for the nodes
+  ansible.builtin.file:
+    path: roles/rabbitmq-conf-files/files/{{ item }}/ssl
+    state: directory
+    mode: 0775
+- name: Copy CA file
+  ansible.builtin.copy:
+    src: files/ssl/ca_certificate.pem
+    dest: "roles/rabbitmq-conf-files/files/{{ item }}/ssl/"
+    mode: 0664
+- name: Copy server's cert
+  ansible.builtin.copy:
+    src: "files/ssl/server_nodeMQ01_certificate.pem"
+    dest: "roles/rabbitmq-conf-files/files/{{ item }}/ssl/server.crt"
+    mode: 0664
+- name: Copy server's key
+  ansible.builtin.copy:
+    src: "files//ssl/server_nodeMQ01_key.pem"
+    dest: "roles/rabbitmq-conf-files/files/{{ item }}/ssl/server.key"
+    mode: 0664
 - name: create config files
   ansible.builtin.template:
     src: templates/rabbitmq.conf.j2

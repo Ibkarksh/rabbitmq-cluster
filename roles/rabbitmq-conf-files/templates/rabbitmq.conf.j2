@@ -8,15 +8,22 @@ default_user_tags.administrator = true
 default_user_tags.management = true
 default_user_tags.custom_tag = true
 heartbeat = 60
-frame_max = 131072
-initial_frame_max = 4096
-channel_max = 128
-#vm_memory_high_watermark.absolute = 1GB
-#total_memory_available_override_value = 2GB
-#disk_free_limit.absolute = 5GB
+cluster_name=EgyptianBanks
+cluster_partition_handling = pause_minority
+vm_memory_high_watermark.relative = 0.7
+#total_memory_available_override_value = 1GB
+#disk_free_limit.relative = 0.3
 #cluster_keepalive_interval = 10000
 management.load_definitions = /etc/rabbitmq/rabbitmq_definitions.json
 {% endif %}
+listeners.ssl.default = 5671
+ssl_cert_login_from = common_name
+ssl_options.cacertfile = /mnt/ca_certificate.pem
+ssl_options.certfile   = /mnt/server.crt
+ssl_options.keyfile    = /mnt/server.key
+ssl_options.verify     = verify_peer
+ssl_options.fail_if_no_peer_cert = true
+auth_mechanisms.1 = EXTERNAL
 cluster_formation.peer_discovery_backend     = rabbit_peer_discovery_classic_config
 {% set count = namespace(value=1) %}
 {% for host in groups['nodes'] %}
